@@ -60,6 +60,7 @@ h3{
     -webkit-box-shadow: 0px 0px 13px -2px rgba(0,0,0,0.42);
     -moz-box-shadow: 0px 0px 13px -2px rgba(0,0,0,0.42);
     box-shadow: 0px 0px 13px -2px rgba(0,0,0,0.42);
+    cursor: pointer;
 }
 .answer-button {
     margin-left: 2%;
@@ -67,6 +68,7 @@ h3{
     padding: 2%;
     font-size: 140%;
     width: 12%;
+    cursor: pointer;
 }
 #total-stats {
     width: 40%;

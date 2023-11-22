@@ -1,4 +1,4 @@
-// inisiasi variable
+//inisialiasi variabel untuk menampung elemen dokumen
 const localTotalVictoryField = document.getElementById(
   "local-total-victory-field"
 );
@@ -26,9 +26,9 @@ const sessionUserAttemptsField = document.getElementById(
   "session-user-attempts-amount-field"
 );
 
-// inisiasi fungsi untuk menghasilkan jawaban permainan;
+//inisialisasi fungsi untuk menghasilkan jawaban permainan
 function getAnswer() {
-  let answer = "123".split();
+  let answer = "123".split("");
   for (let i = 0; i < answer.length; i++) {
     let j = Math.floor(Math.random() * (i + 1));
     let tmp = answer[i];
@@ -38,7 +38,7 @@ function getAnswer() {
   return answer.join("");
 }
 
-// inisialisasi key session storage
+//inisialiasi key untuk session storage
 const sessionAnswerKey = "SESSION_ANSWER";
 const sessionUserAttemptsKey = "SESSION_USER_ATTEMPTS";
 const sessionUserIsPlayingKey = "SESSION_USER_IS_PLAYING";
@@ -47,7 +47,6 @@ const sessionUserIsPlayingKey = "SESSION_USER_IS_PLAYING";
 const localTotalVictoryKey = "LOCAL_TOTAL_VICTORIES_PLAYED";
 const localMaximumAttemptsKey = "LOCAL_MAXIMUM_ATTEMPTS";
 
-// mengecek apakah web storage berjalan atau tidak?
 window.addEventListener("load", function () {
   if (typeof Storage !== "undefined") {
     // inisialisasi semua item web storage yang kita akan gunakan jika belum ada
@@ -69,6 +68,7 @@ window.addEventListener("load", function () {
   } else {
     alert("Browser yang Anda gunakan tidak mendukung Web Storage");
   }
+  //inisialisasi semua nilai field pada dokumen yang menggunakan nilai dari web storage
   sessionUserAttemptsField.innerText = sessionStorage.getItem(
     sessionUserAttemptsKey
   );
@@ -76,4 +76,88 @@ window.addEventListener("load", function () {
   localMaximumAttemptField.innerText = localStorage.getItem(
     localMaximumAttemptsKey
   );
+});
+
+playButton.addEventListener("click", function () {
+  sessionStorage.setItem(sessionAnswerKey, getAnswer());
+  sessionStorage.setItem(sessionUserIsPlayingKey, true);
+  beforeGameDisplay.setAttribute("hidden", true);
+  duringGameDisplay.removeAttribute("hidden");
+});
+
+answerButton1.addEventListener("click", function () {
+  sessionUserAnswerField.innerText += "1";
+  if (sessionUserAnswerField.innerText.length == 3) {
+    checkAnswer(sessionUserAnswerField.innerText);
+  }
+});
+
+answerButton2.addEventListener("click", function () {
+  sessionUserAnswerField.innerText += "2";
+  if (sessionUserAnswerField.innerText.length == 3) {
+    checkAnswer(sessionUserAnswerField.innerText);
+  }
+});
+
+answerButton3.addEventListener("click", function () {
+  sessionUserAnswerField.innerText += "3";
+  if (sessionUserAnswerField.innerText.length == 3) {
+    checkAnswer(sessionUserAnswerField.innerText);
+  }
+});
+// check answer benar atau tidak
+function checkAnswer(userGuess) {
+  const answer = sessionStorage.getItem(sessionAnswerKey);
+  if (userGuess == answer) {
+    duringGameDisplay.setAttribute("hidden", true);
+    afterGameDisplay.removeAttribute("hidden");
+    sessionTrueAnswerField.innerText = answer;
+    updateScore();
+  } else {
+    const previousAttemptAmount = parseInt(
+      sessionStorage.getItem(sessionUserAttemptsKey)
+    );
+    sessionStorage.setItem(sessionUserAttemptsKey, previousAttemptAmount + 1);
+    sessionUserAttemptsField.innerText = sessionStorage.getItem(
+      sessionUserAttemptsKey
+    );
+    sessionUserAnswerField.innerText = "";
+    sessionUserWrongAnswerField.innerText = userGuess;
+  }
+}
+
+function updateScore() {
+  const sessionAttemptsValue = parseInt(
+    sessionStorage.getItem(sessionUserAttemptsKey)
+  );
+  const localAttemptsValue = parseInt(
+    localStorage.getItem(localMaximumAttemptsKey)
+  );
+  if (sessionAttemptsValue > localAttemptsValue) {
+    localStorage.setItem(localMaximumAttemptsKey, sessionAttemptsValue);
+    localMaximumAttemptField.innerText = sessionAttemptsValue;
+  }
+  const previousTotalVictoryAmount = parseInt(
+    localStorage.getItem(localTotalVictoryKey)
+  );
+  localStorage.setItem(localTotalVictoryKey, previousTotalVictoryAmount + 1);
+  localTotalVictoryField.innerText = localStorage.getItem(localTotalVictoryKey);
+}
+
+window.addEventListener("beforeunload", function () {
+  sessionUserAnswerField.innerText = "";
+  sessionUserWrongAnswerField.innerText = "";
+  sessionStorage.setItem(sessionUserAttemptsKey, 0);
+  sessionUserAttemptsField.innerText = sessionStorage.getItem(
+    sessionUserAttemptsKey
+  );
+});
+
+destroyDataButton.addEventListener("click", function () {
+  sessionStorage.removeItem(sessionAnswerKey);
+  sessionStorage.removeItem(sessionUserAttemptsKey);
+  sessionStorage.removeItem(sessionUserIsPlayingKey);
+  localStorage.removeItem(localTotalVictoryKey);
+  localStorage.removeItem(localMaximumAttemptsKey);
+  alert("Mohon me-refresh halaman ini kembali");
 });
